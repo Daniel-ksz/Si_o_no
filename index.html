@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Mi Persona Favorita ❤️</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Fonts Google -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        romantic: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                        }
+                    },
+                    fontFamily: {
+                        serifHand: ['"Dancing Script"', 'cursive'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #180912;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Carrusel / Slideshow de fondo */
+        .bg-slideshow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            filter: brightness(0.65) blur(1px);
+            transform: scale(1.02);
+        }
+
+        .bg-slide.active {
+            opacity: 1;
+        }
+
+        /* Overlay para legibilidad */
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(20, 5, 12, 0.6) 0%, rgba(225, 29, 72, 0.2) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Corazones flotantes de fondo */
+        .heart-bg {
+            position: fixed;
+            pointer-events: none;
+            z-index: 2;
+            animation: floatUp 8s infinite linear;
+            opacity: 0.7;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) scale(0.5) rotate(0deg);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translateY(-10vh) scale(1.2) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Vidrio Esmerilado (Glassmorphism) */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Shake animation para error en contraseña */
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-10px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(10px);
+            }
+        }
+
+        .shake-animation {
+            animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+        }
+
+        /* Sobre Interactivo 3D */
+        .envelope-wrapper {
+            perspective: 1000px;
+        }
+
+        .envelope {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            background: #ffe4e6;
+            border-radius: 1rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            transition: transform 0.6s ease;
+        }
+
+        /* Transiciones suaves de pasos */
+        .step-section {
+            transition: all 0.7s ease-in-out;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body class="font-sans text-gray-800 relative selection:bg-romantic-200 selection:text-romantic-600">
+
+    <!-- SLIDESHOW DE FOTOS DE FONDO -->
+    <div class="bg-slideshow-container" id="slideshow-container">
+        <!-- Las imágenes se cargan dinámicamente desde JavaScript -->
+    </div>
+
+    <div class="bg-overlay"></div>
+    <div id="hearts-container"></div>
+
+    <main class="relative z-10 min-h-screen flex flex-col justify-center items-center px-4 py-8">
+
+        <!-- =========================================================================
+             PASO 1: PANTALLA DE ACCESO / CONTRASEÑA
+             ========================================================================= -->
+        <section id="step-1-login" class="step-section w-full max-w-md mx-auto">
+            <div id="lock-box"
+                class="glass-card p-8 sm:p-10 rounded-3xl text-center border-2 border-pink-200 shadow-2xl">
+                <div class="inline-flex p-4 rounded-full bg-romantic-100 text-romantic-500 mb-4 animate-bounce">
+                    <i data-lucide="lock" class="w-8 h-8"></i>
+                </div>
+
+                <h2 class="text-3xl font-bold font-serifHand text-romantic-600 mb-1">Nuestro Futuro</h2>
+                <p class="text-gray-600 text-sm mb-6">Ingresa la contraseña para un nuevo futuro ❤️</p>
+
+                <form onsubmit="checkPassword(event)" class="space-y-4">
+                    <div class="relative">
+                        <input type="password" id="password-input" placeholder="Escribe la contraseña..."
+                            class="w-full px-5 py-3.5 rounded-full bg-white/90 border border-romantic-200 focus:border-romantic-500 focus:outline-none focus:ring-2 focus:ring-romantic-300 text-center font-medium text-gray-800 placeholder-gray-400 text-base shadow-inner transition">
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-gradient-to-r from-romantic-500 to-romantic-600 text-white font-semibold py-3.5 px-6 rounded-full shadow-lg shadow-romantic-300 hover:shadow-xl hover:from-romantic-600 hover:to-romantic-500 transform hover:-translate-y-0.5 active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer">
+                        <span>Entrar a la sorpresa</span>
+                        <i data-lucide="key-round" class="w-4 h-4"></i>
+                    </button>
+                </form>
+
+                <p id="error-msg" class="text-xs text-red-500 font-semibold mt-3 hidden"></p>
+
+                <!-- Pista opcional -->
+                <div class="mt-6 pt-4 border-t border-gray-200/60">
+                    <button type="button" onclick="toggleHint()"
+                        class="text-xs text-romantic-600 hover:underline flex items-center justify-center gap-1 mx-auto cursor-pointer">
+                        <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
+                        <span>¿Necesitas una pista?</span>
+                    </button>
+                    <p id="hint-text"
+                        class="text-xs text-gray-500 mt-2 italic hidden bg-pink-50/80 p-2.5 rounded-xl border border-pink-100">
+                        <!-- Pista configurable -->
+                        💡 Pista: <span id="hint-content">Revisa las últimas seis fotos en nuestra aplicación</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================================
+             PASO 2: PRIMER VIDEO (INTRO)
+             ========================================================================= -->
+        <section id="step-2-video" class="step-section hidden w-full max-w-3xl mx-auto text-center">
+            <div class="glass-card p-6 sm:p-8 rounded-3xl border-2 border-pink-200 shadow-2xl">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-romantic-100 text-romantic-600 font-semibold text-xs mb-4">
+                    <i data-lucide="film" class="w-4 h-4"></i>
+                    <span>Tengo algo que decirte...</span>
+                </div>
+
+                <h2 class="text-2xl sm:text-4xl font-bold font-serifHand text-romantic-600 mb-4">Volveria a pedirte ir a
+                    bailar todos los dias de mi vida ❤️</h2>
+
+                <!-- REPRODUCTOR DE VIDEO 1 -->
+                <div class="relative aspect-video w-full bg-black rounded-2xl overflow-hidden shadow-xl mb-6">
+                    <video id="intro-video" controls class="w-full h-full object-cover">
+                        <source src="siono.mov" type="video/quicktime">
+                        <source src="siono.mov" type="video/mp4">
+                        Tu navegador no soporta la reproducción de video.
+                    </video>
+                </div>
+
+                <div
+                    class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-pink-50/80 p-4 rounded-2xl border border-pink-100">
+                    <p class="text-xs text-gray-600 text-left">El video avanzará automáticamente al terminar, o puedes
+                        hacer clic en continuar si ya lo viste.</p>
+                    <button onclick="goToStep3()"
+                        class="w-full sm:w-auto bg-romantic-500 hover:bg-romantic-600 text-white font-semibold text-sm px-6 py-2.5 rounded-full shadow transition flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer">
+                        <span>Continuar</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================================
+             PASO 3: LA PREGUNTA INTERACTIVA
+             ========================================================================= -->
+        <section id="step-3-question" class="step-section hidden w-full max-w-xl mx-auto text-center">
+            <div
+                class="glass-card p-8 sm:p-12 rounded-3xl border-2 border-pink-200 shadow-2xl relative overflow-hidden">
+                <div class="inline-block p-4 rounded-full bg-romantic-100 text-romantic-500 mb-4 animate-bounce">
+                    <i data-lucide="heart-handshake" class="w-10 h-10"></i>
+                </div>
+
+                <h2 class="text-3xl sm:text-5xl font-bold font-serifHand text-romantic-600 mb-6 leading-tight">
+                    ¿Quieres ser mi novia?<br>
+                    <span class="text-xl sm:text-2xl text-gray-700 font-sans font-semibold">Pedida 1 de 2 ❤️</span>
+                </h2>
+
+                <p class="text-gray-600 text-sm mb-8">Lo que te dije en la carta es real, te quiero tener en mi vida.
+                </p>
+
+                <!-- Contenedor de Botones Interactivos -->
+                <div class="relative min-h-[140px] flex items-center justify-center gap-6" id="btn-container">
+                    <!-- Botón SÍ -->
+                    <button id="yes-btn" onclick="handleYesClick()"
+                        class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-lg px-8 py-3.5 rounded-full shadow-lg shadow-emerald-200 transform transition-all duration-300 flex items-center gap-2 z-10 cursor-pointer">
+                        <span id="yes-btn-text">¡SÍ! 💖</span>
+                    </button>
+
+                    <!-- Botón NO Evasivo -->
+                    <button id="no-btn" onmouseenter="dodgeButton()" onclick="dodgeButton()"
+                        ontouchstart="dodgeButton()"
+                        class="bg-gray-400 hover:bg-gray-500 text-white font-bold text-lg px-8 py-3.5 rounded-full shadow transition-all duration-200 absolute sm:relative z-20 cursor-pointer">
+                        No 💔
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================================
+             PASO 5: ÁLBUM FINAL, MÚSICA Y CARTA DE AMOR
+             ========================================================================= -->
+        <section id="step-5-album" class="step-section hidden w-full max-w-5xl mx-auto space-y-16 py-8">
+
+            <!-- Barra de Navegación del Paso Final -->
+            <nav
+                class="sticky top-4 z-40 w-full max-w-lg mx-auto glass-card rounded-full px-5 py-3 flex justify-around items-center shadow-lg border border-pink-200">
+                <a href="#galeria-sec"
+                    class="text-romantic-600 hover:text-romantic-800 font-semibold text-xs sm:text-sm flex items-center gap-1">
+                    <i data-lucide="image" class="w-4 h-4"></i>Fotos
+                </a>
+                <a href="#videos-sec"
+                    class="text-romantic-600 hover:text-romantic-800 font-semibold text-xs sm:text-sm flex items-center gap-1">
+                    <i data-lucide="film" class="w-4 h-4"></i>Videos
+                </a>
+                <a href="#musica-sec"
+                    class="text-romantic-600 hover:text-romantic-800 font-semibold text-xs sm:text-sm flex items-center gap-1">
+                    <i data-lucide="music" class="w-4 h-4"></i>Música
+                </a>
+                <a href="#carta-sec"
+                    class="text-romantic-600 hover:text-romantic-800 font-semibold text-xs sm:text-sm flex items-center gap-1">
+                    <i data-lucide="mail" class="w-4 h-4"></i>Carta
+                </a>
+            </nav>
+
+            <!-- TITULAR -->
+            <div class="text-center">
+                <h1 class="text-4xl sm:text-6xl font-bold font-serifHand text-romantic-500 drop-shadow-md mb-2">
+                    Bienvenida a Nuestra Historia ❤️</h1>
+                <p class="text-white font-medium text-sm sm:text-base">Un espacio creado solo para celebrar nuestro amor
+                </p>
+            </div>
+
+            <!-- SECCIÓN: GALERÍA DE FOTOS -->
+            <div id="galeria-sec" class="scroll-mt-24">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold font-serifHand text-white">Galería de Recuerdos</h2>
+                    <p class="text-pink-100 text-xs">Nuestros mejores momentos guardados para siempre</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    <!-- FOTO 1 -->
+                    <div
+                        class="glass-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 transform hover:-translate-y-1">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="fotos/IMG_0173.jpg"
+                                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80';"
+                                alt="Foto 1" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                        </div>
+                        <div class="p-4 bg-white/80">
+                            <h3 class="font-bold text-gray-800 text-base">Tú y yo</h3>
+                            <p class="text-xs text-gray-600 mt-1">Estar contigo es lo que quiero.</p>
+                        </div>
+                    </div>
+
+                    <!-- FOTO 2 -->
+                    <div
+                        class="glass-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 transform hover:-translate-y-1">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="fotos/IMG_0272.jpg"
+                                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80';"
+                                alt="Foto 2" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                        </div>
+                        <div class="p-4 bg-white/80">
+                            <h3 class="font-bold text-gray-800 text-base">Juntos</h3>
+                            <p class="text-xs text-gray-600 mt-1">Eres la persona con la que me siento libre de hacer lo
+                                que me gusta.</p>
+                        </div>
+                    </div>
+
+                    <!-- FOTO 3 -->
+                    <div
+                        class="glass-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 transform hover:-translate-y-1">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="fotos/IMG_0450.jpg"
+                                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=800&q=80';"
+                                alt="Foto 3" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                        </div>
+                        <div class="p-4 bg-white/80">
+                            <h3 class="font-bold text-gray-800 text-base">Me encantas</h3>
+                            <p class="text-xs text-gray-600 mt-1">Me encanta cada pequeño detalle que haces.</p>
+                        </div>
+                    </div>
+
+                    <!-- FOTO 4 -->
+                    <div
+                        class="glass-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 transform hover:-translate-y-1">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="fotos/IMG_0657.jpg"
+                                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=800&q=80';"
+                                alt="Foto 4" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                        </div>
+                        <div class="p-4 bg-white/80">
+                            <h3 class="font-bold text-gray-800 text-base">A donde sea pero contigo</h3>
+                            <p class="text-xs text-gray-600 mt-1">No importa el plan ni el lugar, si estoy contigo ya es
+                                mi día favorito.</p>
+                        </div>
+                    </div>
+
+                    <!-- FOTO 5 -->
+                    <div
+                        class="glass-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 transform hover:-translate-y-1">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="fotos/IMG_0665.jpg"
+                                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1494774157365-9e04c6720e47?auto=format&fit=crop&w=800&q=80';"
+                                alt="Foto 5" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                        </div>
+                        <div class="p-4 bg-white/80">
+                            <h3 class="font-bold text-gray-800 text-base">Mi lugar favorito</h3>
+                            <p class="text-xs text-gray-600 mt-1">Estar cerquita de ti y sentir esa paz que no encuentro
+                                en ningún otro lado.</p>
+                        </div>
+                    </div>
+
+                    <!-- FOTO 6 -->
+                    <div
+                        class="glass-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 transform hover:-translate-y-1">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="fotos/b0e3901b-bd15-46b9-a401-b57720916a08.jpg"
+                                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=800&q=80';"
+                                alt="Foto 6" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                        </div>
+                        <div class="p-4 bg-white/80">
+                            <h3 class="font-bold text-gray-800 text-base">Historia</h3>
+                            <p class="text-xs text-gray-600 mt-1">Por más días junto a ti.</p>
+                        </div>
+                    </div>
+
+                    <!-- FOTO 7 -->
+                    <div
+                        class="glass-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 transform hover:-translate-y-1 sm:col-span-2 lg:col-span-1">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="fotos/3e1d3137-d4c0-4330-b4dc-cee7de1152b0.jpg"
+                                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80';"
+                                alt="Foto 7" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                        </div>
+                        <div class="p-4 bg-white/80">
+                            <h3 class="font-bold text-gray-800 text-base">Nuestro futuro</h3>
+                            <p class="text-xs text-gray-600 mt-1">Apenas estamos empezando a escribir lo más bonito de
+                                nuestra historia.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- =========================================================================
+                 SECCIÓN: NUESTROS VIDEOS
+                 ========================================================================= -->
+            <div id="videos-sec" class="scroll-mt-24">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold font-serifHand text-white">Nuestros Videos</h2>
+                    <p class="text-pink-100 text-xs">Momentos que cobran vida una y otra vez</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                    <!-- Video 1 -->
+                    <div class="glass-card rounded-3xl p-4 sm:p-5 shadow-2xl border-2 border-pink-200">
+                        <div class="relative aspect-video w-full bg-black rounded-2xl overflow-hidden shadow-lg mb-3">
+                            <video controls playsinline preload="metadata" class="w-full h-full object-cover">
+                                <source src="videos/IMG_0004.mp4" type="video/mp4">
+                                Tu navegador no soporta video.
+                            </video>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base flex items-center gap-2">
+                            <i data-lucide="video" class="w-4 h-4 text-romantic-500"></i>
+                            Cotidiano
+                        </h3>
+                        <p class="text-xs text-gray-600 mt-1">Cualquier día lo puedes hacer bonito.</p>
+                    </div>
+
+                    <!-- Video 2 -->
+                    <div class="glass-card rounded-3xl p-4 sm:p-5 shadow-2xl border-2 border-pink-200">
+                        <div class="relative aspect-video w-full bg-black rounded-2xl overflow-hidden shadow-lg mb-3">
+                            <video controls playsinline preload="metadata" class="w-full h-full object-cover">
+                                <source src="videos/IMG_0447.mp4" type="video/mp4">
+                                Tu navegador no soporta video.
+                            </video>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base flex items-center gap-2">
+                            <i data-lucide="heart" class="w-4 h-4 text-romantic-500"></i>
+                            Nuestra primera cita
+                        </h3>
+                        <p class="text-xs text-gray-600 mt-1">Pasaron muchas semanas para que sucediera, pero me
+                            encantó.</p>
+                    </div>
+
+                    <!-- Video 3 -->
+                    <div class="glass-card rounded-3xl p-4 sm:p-5 shadow-2xl border-2 border-pink-200">
+                        <div class="relative aspect-video w-full bg-black rounded-2xl overflow-hidden shadow-lg mb-3">
+                            <video controls playsinline preload="metadata" class="w-full h-full object-cover">
+                                <source src="videos/IMG_8667.mp4" type="video/mp4">
+                                Tu navegador no soporta video.
+                            </video>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base flex items-center gap-2">
+                            <i data-lucide="smile" class="w-4 h-4 text-romantic-500"></i>
+                            Así me siento contigo
+                        </h3>
+                        <p class="text-xs text-gray-600 mt-1">Estar contigo se siente como un show de fuegos
+                            artificiales.</p>
+                    </div>
+
+                    <!-- Video 4 -->
+                    <div class="glass-card rounded-3xl p-4 sm:p-5 shadow-2xl border-2 border-pink-200">
+                        <div class="relative aspect-video w-full bg-black rounded-2xl overflow-hidden shadow-lg mb-3">
+                            <video controls playsinline preload="metadata" class="w-full h-full object-cover">
+                                <source src="videos/1788153816.470968share.mp4" type="video/mp4">
+                                Tu navegador no soporta video.
+                            </video>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base flex items-center gap-2">
+                            <i data-lucide="sparkles" class="w-4 h-4 text-romantic-500"></i>
+                            Juntos en todo
+                        </h3>
+                        <p class="text-xs text-gray-600 mt-1">Cualquier cosa que haga contigo se siente especial.</p>
+                    </div>
+
+                    <!-- Video 5 -->
+                    <div class="glass-card rounded-3xl p-4 sm:p-5 shadow-2xl border-2 border-pink-200">
+                        <div class="relative aspect-video w-full bg-black rounded-2xl overflow-hidden shadow-lg mb-3">
+                            <video controls playsinline preload="metadata" class="w-full h-full object-cover">
+                                <source src="videos/cca1deac-6df2-48d1-b50b-f1e6d666eff8.mp4" type="video/mp4">
+                                Tu navegador no soporta video.
+                            </video>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base flex items-center gap-2">
+                            <i data-lucide="film" class="w-4 h-4 text-romantic-500"></i>
+                            Instante
+                        </h3>
+                        <p class="text-xs text-gray-600 mt-1">Cualquier instante lo puedes hacer memorable.</p>
+                    </div>
+
+                    <!-- Video 6 -->
+                    <div class="glass-card rounded-3xl p-4 sm:p-5 shadow-2xl border-2 border-pink-200">
+                        <div class="relative aspect-video w-full bg-black rounded-2xl overflow-hidden shadow-lg mb-3">
+                            <video controls playsinline preload="metadata" class="w-full h-full object-cover">
+                                <source src="videos/dna1.mov" type="video/quicktime">
+                                <source src="videos/dna1.mov" type="video/mp4">
+                                Tu navegador no soporta video.
+                            </video>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base flex items-center gap-2">
+                            <i data-lucide="music" class="w-4 h-4 text-romantic-500"></i>
+                            Te encontré
+                        </h3>
+                        <p class="text-xs text-gray-600 mt-1">Y me siento como nunca.</p>
+                    </div>
+
+                    <!-- Video 7 -->
+                    <div class="glass-card rounded-3xl p-4 sm:p-5 shadow-2xl border-2 border-pink-200">
+                        <div class="relative aspect-video w-full bg-black rounded-2xl overflow-hidden shadow-lg mb-3">
+                            <video controls playsinline preload="metadata" class="w-full h-full object-cover">
+                                <source src="videos/06F95A40-EE5F-42DA-BC82-2DEB08B10AF6.MOV" type="video/quicktime">
+                                <source src="videos/06F95A40-EE5F-42DA-BC82-2DEB08B10AF6.MOV" type="video/mp4">
+                                Tu navegador no soporta video.
+                            </video>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base flex items-center gap-2">
+                            <i data-lucide="sun" class="w-4 h-4 text-romantic-500"></i>
+                            No te cambio por nada
+                        </h3>
+                        <p class="text-xs text-gray-600 mt-1">Gracias por ser mi persona favorita en el mundo.</p>
+                    </div>
+
+                    <!-- Video 8: El video de la pedida -->
+                    <div
+                        class="glass-card rounded-3xl p-4 sm:p-5 shadow-2xl border-2 border-pink-200 sm:col-span-2 lg:col-span-2">
+                        <div class="relative aspect-video w-full bg-black rounded-2xl overflow-hidden shadow-lg mb-3">
+                            <video controls playsinline preload="metadata" class="w-full h-full object-cover">
+                                <source src="siono.mov" type="video/quicktime">
+                                <source src="siono.mov" type="video/mp4">
+                                Tu navegador no soporta video.
+                            </video>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base flex items-center gap-2">
+                            <i data-lucide="sparkles" class="w-4 h-4 text-romantic-500"></i>
+                            Volvería a pedirte bailar todos los días
+                        </h3>
+                        <p class="text-xs text-gray-600 mt-1">El mensaje especial con el que empezó todo esto ❤️</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN: REPRODUCTOR DE MÚSICA -->
+            <div id="musica-sec" class="scroll-mt-24">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold font-serifHand text-white">Nuestra Banda Sonora</h2>
+                    <p class="text-pink-100 text-xs">Canciones que me recuerdan cada segundo a ti</p>
+                </div>
+
+                <div
+                    class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border-2 border-pink-200 flex flex-col md:flex-row gap-8 items-center max-w-3xl mx-auto">
+                    <!-- Carátula -->
+                    <div class="w-48 h-48 rounded-2xl overflow-hidden shadow-xl relative flex-shrink-0">
+                        <img id="player-cover"
+                            src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80"
+                            alt="Cover" class="w-full h-full object-cover">
+                    </div>
+
+                    <!-- Controles -->
+                    <div class="flex-1 w-full flex flex-col justify-between">
+                        <div>
+                            <span id="player-genre"
+                                class="text-xs font-bold text-romantic-600 bg-romantic-100 px-3 py-1 rounded-full uppercase">Romántica</span>
+                            <h3 id="player-title" class="text-2xl font-bold text-gray-800 mt-2">Título Canción</h3>
+                            <p id="player-artist" class="text-xs text-gray-600">Nombre Artista</p>
+                        </div>
+
+                        <audio id="main-audio"></audio>
+
+                        <div class="my-4">
+                            <div class="w-full bg-romantic-200 h-2 rounded-full cursor-pointer relative overflow-hidden"
+                                id="progress-container">
+                                <div class="bg-romantic-500 h-full w-0 transition-all duration-100" id="progress-bar">
+                                </div>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-500 mt-1 font-mono">
+                                <span id="current-time">0:00</span>
+                                <span id="total-duration">0:00</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-center gap-6">
+                            <button onclick="prevSong()"
+                                class="p-2 text-romantic-600 hover:text-romantic-500 transition">
+                                <i data-lucide="skip-back" class="w-6 h-6"></i>
+                            </button>
+                            <button onclick="togglePlay()" id="play-btn"
+                                class="p-4 bg-romantic-500 hover:bg-romantic-600 text-white rounded-full shadow-lg shadow-romantic-300 transition">
+                                <i data-lucide="play" class="w-6 h-6 fill-current" id="play-icon"></i>
+                            </button>
+                            <button onclick="nextSong()"
+                                class="p-2 text-romantic-600 hover:text-romantic-500 transition cursor-pointer">
+                                <i data-lucide="skip-forward" class="w-6 h-6"></i>
+                            </button>
+                        </div>
+
+                        <!-- Botón y Reproductor de Playlist Externa (Spotify) -->
+                        <div class="mt-6 pt-4 border-t border-romantic-200/50 text-center">
+                            <p class="text-xs text-romantic-600 font-semibold mb-2">O escucha nuestra playlist completa
+                                en Spotify:</p>
+                            <iframe style="border-radius:16px"
+                                src="https://open.spotify.com/embed/playlist/0Cb6LvWiGTVn9Rh7afYIZG?utm_source=generator&theme=0"
+                                width="100%" height="152" frameBorder="0" allowfullscreen=""
+                                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                loading="lazy" class="mb-3 shadow-md w-full"></iframe>
+
+                            <a id="playlist-btn"
+                                href="https://open.spotify.com/playlist/0Cb6LvWiGTVn9Rh7afYIZG?si=cc1059ac86d24f72"
+                                target="_blank" rel="noopener noreferrer"
+                                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#1DB954] hover:bg-[#1ed760] text-white font-semibold text-xs shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 active:scale-95">
+                                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
+                                </svg>
+                                <span>Abrir directamente en la app de Spotify</span>
+                                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN: CARTA ROMÁNTICA INTERACTIVA -->
+            <div id="carta-sec" class="scroll-mt-24 pb-12">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold font-serifHand text-white">Una Carta de Mi Corazón</h2>
+                    <p class="text-pink-100 text-xs">Toca el sobre para abrir la carta secreta</p>
+                </div>
+
+                <div class="max-w-xl mx-auto">
+                    <div id="envelope" onclick="openEnvelope()"
+                        class="glass-card rounded-3xl p-8 text-center border-2 border-pink-200 hover:border-romantic-400 transition duration-300 shadow-xl cursor-pointer relative">
+
+                        <div id="envelope-closed">
+                            <div
+                                class="w-20 h-20 bg-romantic-100 rounded-full flex items-center justify-center mx-auto mb-4 text-romantic-500 animate-pulse">
+                                <i data-lucide="mail-open" class="w-10 h-10"></i>
+                            </div>
+                            <p class="font-serifHand text-2xl text-romantic-600">Presiona para abrir la carta 💌</p>
+                        </div>
+
+                        <div id="envelope-open" class="hidden text-left pt-2">
+                            <div class="border-b border-pink-200 pb-3 mb-4 flex justify-between items-center">
+                                <span class="font-serifHand text-2xl text-romantic-600 font-bold">Para el amor de mi
+                                    vida,</span>
+                                <i data-lucide="heart" class="w-5 h-5 text-romantic-500 fill-current"></i>
+                            </div>
+
+                            <!-- EDITAR TU CARTA AQUÍ -->
+                            <div class="space-y-4 text-gray-700 text-sm leading-relaxed">
+                                <p>
+                                    Quería crear algo bonito a distancia, aunque aún te lo quiero pedir en presencial,
+                                    no quita el hecho de que sentía la necesidad de pedírtelo antes y no esperarme hasta
+                                    diciembre para hacerlo, así que quiero decirte lo siguiente:
+                                </p>
+                                <p>
+                                    Amor, me encontraste en un punto de mi vida de confusión. Realmente quería mejorar
+                                    algunos aspectos de mi vida, solo que no sabía cómo hacerlo; me sentía un poco
+                                    perdido y descargué algunas emociones de confusión contigo, y tú, aunque no sabías
+                                    cómo actuar, me acompañabas.
+                                </p>
+                                <p>
+                                    Todo el tiempo que hemos estado juntos me ha servido para aclarar un poco lo que
+                                    quiero, y en todo este camino he concluido de verdad que no sé qué me espera en el
+                                    futuro, pero de lo que estoy seguro es de que quiero que sea junto a ti. Contigo me
+                                    siento con la confianza de explorar más cosas tanto en mí mismo como en la vida, y
+                                    lo más importante: me siento yo mismo cuando estoy contigo.
+                                </p>
+                                <p>
+                                    Yo sé, amor, que también te encontré en un punto de tu vida donde te sientes cansada
+                                    de intentarlo, no veías más opciones y tenías otros plans; incluso me llegué a
+                                    sentir que yo no era la persona que podía darte todo lo que necesitas. Sin embargo,
+                                    pensándolo bien, no hay nadie más con la que quiera estar. Si me lo permites, quiero
+                                    crear un futuro para nosotros. Sé que va a requerir esfuerzo y compromiso de ambas
+                                    partes, por eso mismo quiero saber si estás dispuesta a vivir esto junto a mí;
+                                    quiero comprobar si mi rompecabezas encaja con el tuyo.
+                                </p>
+                                <p>
+                                    Por mi parte, quiero decirte que si he dado este paso es porque estoy seguro de que
+                                    quiero compartir mi vida contigo. Gracias por cada chiste que haces, por cada
+                                    sonrisa, por cada mirada, por cada momento que estás junto a mí y gracias por hacer
+                                    que pueda llamarte mi novia. Te amo como no tienes una idea.
+                                </p>
+                                <p class="text-right font-serifHand text-2xl text-romantic-600 pt-4">
+                                    Por siempre tuyo ❤️
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <footer class="text-center text-xs text-white/80 py-4">
+                Hecho con todo el amor del mundo ❤️ | <span id="year"></span>
+            </footer>
+
+        </section>
+
+    </main>
+
+    <!-- =========================================================================
+         LÓGICA JAVASCRIPT Y CONFIGURACIÓN
+         ========================================================================= -->
+    <script>
+        /* CONFIGURACIÓN PERSONALIZABLE */
+        // 1. Contraseña del Login
+        const CORRECT_PASSWORD = 'siono?';
+
+        // 2. Fotos de fondo para el carrusel (usa las fotos reales de tu carpeta fotos/)
+        const backgroundImages = [
+            "fotos/IMG_0173.jpg",
+            "fotos/IMG_0272.jpg",
+            "fotos/IMG_0450.jpg",
+            "fotos/IMG_0657.jpg",
+            "fotos/IMG_0665.jpg",
+            "fotos/b0e3901b-bd15-46b9-a401-b57720916a08.jpg",
+            "fotos/3e1d3137-d4c0-4330-b4dc-cee7de1152b0.jpg"
+        ];
+
+        // Fotos de respaldo en caso de que alguna imagen tarde en cargar
+        const fallbackBackgrounds = [
+            "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=1600&q=80",
+            "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1600&q=80",
+            "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1600&q=80"
+        ];
+
+        // 3. Link de tu Playlist de Spotify
+        const PLAYLIST_URL = "https://open.spotify.com/playlist/0Cb6LvWiGTVn9Rh7afYIZG?si=cc1059ac86d24f72";
+
+        // 4. Canciones locales que pusiste en la carpeta musica/
+        const songs = [
+            {
+                title: "Dance with Me",
+                artist: "Para ti ❤️",
+                cover: "fotos/IMG_0173.jpg",
+                src: "musica/Dance with me.mp3",
+                genre: "Especial"
+            },
+            {
+                title: "Birdie",
+                artist: "Tú y yo ❤️",
+                cover: "fotos/IMG_0450.jpg",
+                src: "musica/birdie.mp3",
+                genre: "Favorita"
+            },
+            {
+                title: "Locos",
+                artist: "Nuestra historia ❤️",
+                cover: "fotos/IMG_0272.jpg",
+                src: "musica/locos.mp3",
+                genre: "Romántica"
+            },
+            {
+                title: "Viento",
+                artist: "eres un sueño",
+                cover: "fotos/IMG_0657.jpg",
+                src: "musica/Viento.mp3",
+                genre: "Especial"
+            }
+        ];
+
+        /* FUNCIONALIDAD DEL CARRUSEL DE FONDO */
+        let currentSlide = 0;
+        function initSlideshow() {
+            const container = document.getElementById('slideshow-container');
+            container.innerHTML = '';
+
+            backgroundImages.forEach((imgUrl, index) => {
+                const slide = document.createElement('div');
+                slide.className = `bg-slide ${index === 0 ? 'active' : ''}`;
+
+                // Probar imagen local, si no existe o falla, usar respaldo
+                const testImg = new Image();
+                testImg.src = imgUrl;
+                testImg.onload = () => {
+                    slide.style.backgroundImage = `url('${imgUrl}')`;
+                };
+                testImg.onerror = () => {
+                    slide.style.backgroundImage = `url('${fallbackBackgrounds[index % fallbackBackgrounds.length]}')`;
+                };
+
+                container.appendChild(slide);
+            });
+
+            setInterval(() => {
+                const slides = document.querySelectorAll('.bg-slide');
+                if (!slides.length) return;
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }, 5000);
+        }
+
+        /* PASO 1: VERIFICAR CONTRASEÑA */
+        function checkPassword(e) {
+            e.preventDefault();
+            const input = document.getElementById('password-input').value.trim();
+            const lockBox = document.getElementById('lock-box');
+            const errorMsg = document.getElementById('error-msg');
+
+            if (input.toLowerCase() === CORRECT_PASSWORD.toLowerCase()) {
+                hideStep('step-1-login');
+                showStep('step-2-video');
+
+                // Intentar reproducir video 1
+                const video1 = document.getElementById('intro-video');
+                if (video1) {
+                    video1.play().catch(() => console.log('Autoplay blocked'));
+                    video1.onended = () => goToStep3();
+                }
+            } else {
+                lockBox.classList.remove('shake-animation');
+                void lockBox.offsetWidth;
+                lockBox.classList.add('shake-animation');
+                errorMsg.innerText = "Contraseña incorrecta, ¡inténtalo de nuevo! 💕";
+                errorMsg.classList.remove('hidden');
+            }
+        }
+
+        function toggleHint() {
+            document.getElementById('hint-text').classList.toggle('hidden');
+        }
+
+        /* NAVEGACIÓN ENTRE PASOS */
+        function hideStep(stepId) {
+            const el = document.getElementById(stepId);
+            if (el) {
+                el.classList.add('hidden');
+            }
+        }
+
+        function showStep(stepId) {
+            const el = document.getElementById(stepId);
+            if (el) {
+                el.classList.remove('hidden');
+                el.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function goToStep3() {
+            // Pausar video 1 si estaba reproduciéndose
+            const v1 = document.getElementById('intro-video');
+            if (v1) v1.pause();
+
+            hideStep('step-2-video');
+            showStep('step-3-question');
+        }
+
+        /* BOTÓN SÍ: SE MUEVE UNA VEZ Y LUEGO CONFIRMA */
+        let yesMovedOnce = false;
+        function handleYesClick() {
+            const yesBtn = document.getElementById('yes-btn');
+            const yesBtnText = document.getElementById('yes-btn-text');
+
+            if (!yesMovedOnce) {
+                yesMovedOnce = true;
+                // Mover ligeramente el botón de SÍ una vez a modo de juego
+                yesBtn.style.transform = 'translate(35px, -20px)';
+                yesBtnText.innerText = 'gracias por escogerme amor ❤️';
+                return;
+            }
+
+            // Segunda vez: Confeti y avance directo a los recuerdos
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 160,
+                    spread: 90,
+                    origin: { y: 0.6 }
+                });
+            }
+
+            hideStep('step-3-question');
+            showStep('step-5-album');
+            playSong();
+        }
+
+        /* BOTÓN NO EVASIVO */
+        let dodgeCount = 0;
+        const noPhrases = [
+            "piensalo bien",
+            "Noooooo",
+            "intenta atraparme jaja"
+        ];
+
+        function dodgeButton() {
+            const btn = document.getElementById('no-btn');
+            const container = document.getElementById('btn-container');
+
+            const phraseIndex = Math.min(dodgeCount, noPhrases.length - 1);
+            btn.innerText = noPhrases[phraseIndex];
+            dodgeCount++;
+
+            const containerRect = container.getBoundingClientRect();
+            const btnWidth = btn.offsetWidth;
+            const btnHeight = btn.offsetHeight;
+
+            const maxX = containerRect.width - btnWidth;
+            const maxY = 120;
+
+            const randomX = Math.random() * maxX - (maxX / 2);
+            const randomY = (Math.random() * maxY) - (maxY / 2);
+
+            btn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+        }
+
+        /* CORAZONES FLOTANTES */
+        function createHearts() {
+            const container = document.getElementById('hearts-container');
+            const heartIcons = ['❤️', '💖', '💕', '💗', '🌸'];
+
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart-bg';
+                heart.innerText = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+                heart.style.left = `${Math.random() * 100}vw`;
+                heart.style.animationDuration = `${6 + Math.random() * 5}s`;
+                heart.style.fontSize = `${16 + Math.random() * 20}px`;
+                heart.style.animationDelay = `${Math.random() * 5}s`;
+                container.appendChild(heart);
+            }
+        }
+
+        /* REPRODUCTOR DE MÚSICA */
+        let songIndex = 0;
+        let isPlaying = false;
+        const audio = document.getElementById('main-audio');
+        const playBtn = document.getElementById('play-btn');
+        const playIcon = document.getElementById('play-icon');
+
+        function loadSong(song) {
+            document.getElementById('player-title').innerText = song.title;
+            document.getElementById('player-artist').innerText = song.artist;
+            const coverEl = document.getElementById('player-cover');
+            coverEl.src = song.cover;
+            coverEl.onerror = () => {
+                coverEl.src = "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80";
+            };
+            document.getElementById('player-genre').innerText = song.genre;
+            audio.src = song.src;
+        }
+
+        function togglePlay() {
+            if (isPlaying) pauseSong();
+            else playSong();
+        }
+
+        function playSong() {
+            isPlaying = true;
+            audio.play().catch(e => console.log(e));
+            if (playIcon) {
+                playIcon.setAttribute('data-lucide', 'pause');
+                lucide.createIcons();
+            }
+        }
+
+        function pauseSong() {
+            isPlaying = false;
+            audio.pause();
+            if (playIcon) {
+                playIcon.setAttribute('data-lucide', 'play');
+                lucide.createIcons();
+            }
+        }
+
+        function prevSong() {
+            songIndex = (songIndex - 1 + songs.length) % songs.length;
+            loadSong(songs[songIndex]);
+            if (isPlaying) playSong();
+        }
+
+        function nextSong() {
+            songIndex = (songIndex + 1) % songs.length;
+            loadSong(songs[songIndex]);
+            if (isPlaying) playSong();
+        }
+
+        /* CARTA INTERACTIVA */
+        function openEnvelope() {
+            document.getElementById('envelope-closed').classList.add('hidden');
+            document.getElementById('envelope-open').classList.remove('hidden');
+        }
+
+        /* INICIALIZACIÓN */
+        window.onload = function () {
+            initSlideshow();
+            createHearts();
+            loadSong(songs[songIndex]);
+
+            // Enlazar link de la playlist
+            const playlistBtn = document.getElementById('playlist-btn');
+            if (playlistBtn && PLAYLIST_URL) {
+                playlistBtn.href = PLAYLIST_URL;
+            }
+
+            // Actualizar barra de audio
+            audio.addEventListener('timeupdate', (e) => {
+                const { duration, currentTime } = e.srcElement;
+                if (isNaN(duration)) return;
+                const percent = (currentTime / duration) * 100;
+                document.getElementById('progress-bar').style.width = `${percent}%`;
+
+                const formatTime = t => Math.floor(t / 60) + ':' + ('0' + Math.floor(t % 60)).slice(-2);
+                document.getElementById('current-time').innerText = formatTime(currentTime);
+                document.getElementById('total-duration').innerText = formatTime(duration);
+            });
+
+            audio.addEventListener('ended', nextSong);
+            document.getElementById('year').innerText = new Date().getFullYear();
+            lucide.createIcons();
+        }
+    </script>
+</body>
+
+</html>
